@@ -31,6 +31,7 @@ declare module "@tanstack/react-table" {
     editedRows: number[];
     handleEditRow: (rowIndex: number) => void;
     updateData: (rowIndex: number, columnId: string, value: unknown) => void;
+    resetCells: number;
   }
 }
 
@@ -40,12 +41,14 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [dataTable, setDataTable] = useState(data);
   const [editedRows, setEditedRows] = useState<number[]>([]);
+  const [resetCells, setResetCells] = useState(0);
 
   const table = useReactTable({
     data: dataTable,
     columns,
     getCoreRowModel: getCoreRowModel(),
     meta: {
+      resetCells,
       editedRows,
       handleEditRow: (rowIndex) => {
         if (editedRows.filter((item) => item === rowIndex).length === 0)
@@ -72,7 +75,10 @@ export function DataTable<TData, TValue>({
       const row = table.getRow(item.toString());
       return row.original;
     });
-    return editedRowsData;
+    console.log(editedRowsData);
+    // process edit here
+    setEditedRows([]);
+    setResetCells((prev) => prev + 1);
   };
 
   return (
