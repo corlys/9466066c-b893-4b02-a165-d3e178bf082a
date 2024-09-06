@@ -3,8 +3,6 @@
 import EditableCell from "@/components/EditableCell";
 import { ColumnDef } from "@tanstack/react-table";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
 export type DataType = {
   id: number;
   firstName: string;
@@ -12,33 +10,43 @@ export type DataType = {
   position: string;
   phone: string;
   email: string;
-  isNewRow?: boolean;
+  newRow?: boolean;
 };
 
 export const columns: ColumnDef<DataType>[] = [
   {
     accessorKey: "firstName",
     header: "First Name",
-    cell: EditableCell,
+    cell: (props) => (
+      <EditableCell {...props} newRow={props.row.original?.newRow} />
+    ),
   },
   {
     accessorKey: "lastName",
     header: "Last Name",
-    cell: EditableCell,
+    cell: (props) => (
+      <EditableCell {...props} newRow={props.row.original?.newRow} />
+    ),
   },
   {
     accessorKey: "position",
     header: "Position",
-    cell: EditableCell,
+    cell: (props) => (
+      <EditableCell {...props} newRow={props.row.original?.newRow} />
+    ),
   },
   {
     accessorKey: "phone",
     header: "Phone",
-    cell: EditableCell,
+    cell: (props) => (
+      <EditableCell {...props} newRow={props.row.original?.newRow} />
+    ),
   },
   {
     accessorKey: "email",
     header: "Email",
-    cell: EditableCell,
+    cell: (props) => (
+      <EditableCell {...props} newRow={props.row.original?.newRow} />
+    ),
   },
 ];

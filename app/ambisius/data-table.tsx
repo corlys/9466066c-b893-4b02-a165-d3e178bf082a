@@ -18,10 +18,9 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Save, FilePlus2 } from "lucide-react";
-
-import { useState } from "react";
 import { DataType } from "./columns";
 
+import { useState, useEffect } from "react";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -36,7 +35,7 @@ declare module "@tanstack/react-table" {
   }
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends DataType, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
@@ -70,20 +69,42 @@ export function DataTable<TData, TValue>({
     },
   });
 
-  const handleAddRow = () => {};
+  const handleAddRow = () => {
+    const newId =
+      dataTable.length > 0
+        ? Math.max(...dataTable.map((row) => row.id)) + 1
+        : 1;
+    const newRow = {
+      id: newId,
+      firstName: "",
+      lastName: "",
+      position: "",
+      phone: "",
+      email: "",
+      newRow: true,
+    } as TData;
+
+    setDataTable((prevData) => [newRow, ...prevData]);
+    setEditedRows((prev) => [...prev, newId]);
+  };
 
   const handleUpdate = () => {
     if (editedRows.length === 0) return;
-    const editedRowsData = editedRows.map((item) => {
-      const row = table.getRow(item.toString());
-      return row.original;
-    });
+    const editedRowsData = dataTable.filter((_, index) =>
+      editedRows.includes(index),
+    );
     console.log(editedRowsData);
     // process edit here
     setEditedRows([]);
     setResetCells((prev) => prev + 1);
+    setDataTable((prevData) =>
+      prevData.map((row) => ({ ...row, newRow: false })),
+    );
   };
 
+  useEffect(() => {
+    console.log(dataTable);
+  }, [dataTable]);
   return (
     <>
       <div className="flex flex-col gap-4">

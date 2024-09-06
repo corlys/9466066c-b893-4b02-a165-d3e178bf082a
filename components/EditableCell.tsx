@@ -3,7 +3,11 @@ import { CellContext } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 
-export default function EditableCell(props: CellContext<DataType, unknown>) {
+interface EditableCellProps extends CellContext<DataType, unknown> {
+  newRow?: boolean;
+}
+
+export default function EditableCell(props: EditableCellProps) {
   const initialValue = props.getValue();
   const [value, setValue] = useState(initialValue);
   const [isEdited, setIsEdited] = useState(false);
@@ -26,7 +30,7 @@ export default function EditableCell(props: CellContext<DataType, unknown>) {
   return (
     <>
       <Input
-        className={`${isEdited && "bg-green-200"}`}
+        className={`${(isEdited || props?.newRow) && "bg-green-200"}`}
         onBlur={onBlur}
         value={value as string}
         onChange={(e) => setValue(e.target.value)}
