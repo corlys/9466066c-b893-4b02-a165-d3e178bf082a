@@ -6,6 +6,8 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
+  SortingState,
+  getSortedRowModel,
 } from "@tanstack/react-table";
 
 import {
@@ -42,11 +44,17 @@ export function DataTable<TData extends DataType, TValue>({
   const [dataTable, setDataTable] = useState(data);
   const [editedRows, setEditedRows] = useState<number[]>([]);
   const [resetCells, setResetCells] = useState(0);
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const table = useReactTable({
     data: dataTable,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+    },
     meta: {
       resetCells,
       editedRows,
