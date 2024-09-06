@@ -12,6 +12,7 @@ export type DataType = {
   position: string;
   phone: string;
   email: string;
+  isNewRow?: boolean;
 };
 
 export const columns: ColumnDef<DataType>[] = [

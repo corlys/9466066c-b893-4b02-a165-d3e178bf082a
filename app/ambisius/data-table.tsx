@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Save, FilePlus2 } from "lucide-react";
 
 import { useState } from "react";
+import { DataType } from "./columns";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -69,6 +70,8 @@ export function DataTable<TData, TValue>({
     },
   });
 
+  const handleAddRow = () => {};
+
   const handleUpdate = () => {
     if (editedRows.length === 0) return;
     const editedRowsData = editedRows.map((item) => {
@@ -85,7 +88,7 @@ export function DataTable<TData, TValue>({
     <>
       <div className="flex flex-col gap-4">
         <div className="flex justify-between self-end gap-2">
-          <Button>
+          <Button onClick={handleAddRow}>
             <FilePlus2 />
           </Button>
           <Button onClick={handleUpdate}>
