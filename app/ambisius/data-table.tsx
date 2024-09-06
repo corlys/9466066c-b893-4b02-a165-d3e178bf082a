@@ -2,6 +2,7 @@
 
 import {
   ColumnDef,
+  RowData,
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -15,12 +16,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Save, FilePlus2 } from "lucide-react";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+}
+
+declare module "@tanstack/react-table" {
+  interface TableMeta<TData extends RowData> {
+    editedRows: number[];
+    handleEditRow: (rowIndex: number) => void;
+    updateData: (rowIndex: number, columnId: string, value: unknown) => void;
+  }
 }
 
 export function DataTable<TData, TValue>({
@@ -28,11 +39,18 @@ export function DataTable<TData, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   const [dataTable, setDataTable] = useState(data);
+  const [editedRows, setEditedRows] = useState<number[]>([]);
+
   const table = useReactTable({
     data: dataTable,
     columns,
     getCoreRowModel: getCoreRowModel(),
     meta: {
+      editedRows,
+      handleEditRow: (rowIndex) => {
+        if (editedRows.filter((item) => item === rowIndex).length === 0)
+          setEditedRows((prev) => [...prev, rowIndex]);
+      },
       updateData: (rowIndex, columnId, value) =>
         setDataTable((old) =>
           old.map((row, index) => {
@@ -48,54 +66,77 @@ export function DataTable<TData, TValue>({
     },
   });
 
-  useEffect(() => {
-    console.log(dataTable);
-  }, [dataTable]);
+  const handleUpdate = () => {
+    if (editedRows.length === 0) return;
+    const editedRowsData = editedRows.map((item) => {
+      const row = table.getRow(item.toString());
+      return row.original;
+    });
+    return editedRowsData;
+  };
 
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
+    <>
+      <div className="flex flex-col gap-4">
+        <div className="flex justify-between self-end gap-2">
+          <Button>
+            <FilePlus2 />
+          </Button>
+          <Button onClick={handleUpdate}>
+            <Save />
+          </Button>
+        </div>
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
                         )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
                   </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </div>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    </>
   );
 }
