@@ -25,6 +25,7 @@ export default function EditableCell(props: EditableCellProps) {
   }, [props.table.options.meta?.resetCells]);
 
   const onBlur = () => {
+    if (initialValue === value) return;
     const meta = props.table.options.meta;
     if (props.column.id === "email") {
       const validEmail = isValidEmail(value as string);
