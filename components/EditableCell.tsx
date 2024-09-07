@@ -29,7 +29,6 @@ export default function EditableCell(props: EditableCellProps) {
     const meta = props.table.options.meta;
     if (props.column.id === "email") {
       const validEmail = isValidEmail(value as string);
-      console.log("check email ", validEmail);
       setIsError(!validEmail);
       if (!validEmail) {
         toast({
