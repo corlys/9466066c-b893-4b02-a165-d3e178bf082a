@@ -53,7 +53,7 @@ export default function EditableCell(props: EditableCellProps) {
     <>
       <Input
         className={`
-          ${(isEdited || props?.newRow) && !isError && "bg-green-200"}
+          ${isEdited && !isError && "bg-green-200"}
           ${isError && "bg-red-200"}
         `}
         onBlur={onBlur}

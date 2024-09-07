@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Save, FilePlus2 } from "lucide-react";
 import { DataType } from "./columns";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -110,9 +110,6 @@ export function DataTable<TData extends DataType, TValue>({
     );
   };
 
-  useEffect(() => {
-    console.log(dataTable);
-  }, [dataTable]);
   return (
     <>
       <div className="flex flex-col gap-4">
